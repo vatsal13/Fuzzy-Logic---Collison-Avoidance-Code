@@ -1,0 +1,335 @@
+<html>
+<script src="transform.js"></script>
+<script type="text/javascript">
+var ip = [0,15,10,50,30,100,70,200,150,400]
+var op = [0,5,2.5,7.5,5,10,7.5,18,15,22]
+var res=[]
+var canvas, ctx, flag = false,
+    prevX = 0,
+    currX = 0,
+    prevY = 0,
+    currY = 0,
+    dot_flag = false;
+var i =10;
+var j =0;
+
+var o1=0;
+var o2=0;
+var x1=10;
+var y1=0;
+var x2=10;
+var y2=10;
+
+var x = "black",
+    y = 5;
+var t ;
+
+function init() {
+	alert("How to use: \n 1) Draw Path \n 2) Click Intialize \n 3) CLick on Go for each frame \n");
+    canvas = document.getElementById('can');
+    ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#FFFFFF";
+    ctx.fillRect(0,0,800,600);
+    ctx.save();
+    ctx.translate(20, 570);
+     ctx.rotate(Math.PI*(-1)/(4));
+     ctx.fillStyle = "#000000";
+     ctx.fillRect(0,0,59,29);
+    ctx.restore();
+    t = new Transform();
+    w = canvas.width;
+    h = canvas.height;
+    canvas.addEventListener("mousemove", function (e) {
+        findxy('move', e)
+    }, false);
+    canvas.addEventListener("mousedown", function (e) {
+        findxy('down', e)
+    }, false);
+    canvas.addEventListener("mouseup", function (e) {
+        findxy('up', e)
+    }, false);
+    canvas.addEventListener("mouseout", function (e) {
+        findxy('out', e)
+    }, false);
+
+
+}
+
+function draw() {
+
+    ctx.beginPath();
+    ctx.moveTo(prevX, prevY);
+    ctx.lineTo(currX, currY);
+    ctx.strokeStyle = x;
+    ctx.lineWidth = y;
+    ctx.stroke();
+    ctx.closePath();
+}
+
+function findxy(res, e) {
+    if (res == 'down') {
+        prevX = currX;
+        prevY = currY;
+        currX = e.clientX - canvas.offsetLeft;
+        currY = e.clientY - canvas.offsetTop;
+        flag = true;
+        dot_flag = true;
+        if (dot_flag) {
+            ctx.beginPath();
+            ctx.fillStyle = x;
+            ctx.fillRect(currX, currY, 2, 2);
+            ctx.closePath();
+            dot_flag = false;
+        }
+    }
+    if (res == 'up' || res == "out") {
+        flag = false;
+    }
+    if (res == 'move') {
+        if (flag) {
+            prevX = currX;
+            prevY = currY;
+            currX = e.clientX - canvas.offsetLeft;
+            currY = e.clientY - canvas.offsetTop;
+            draw();
+        }
+    }
+}
+
+function rot0(Q) {
+    ctx.rotate(Q);
+    t.rotate(Q);
+    //prin();
+}
+
+function rect() {
+    ctx.fillStyle = "#000000";
+     ctx.fillRect(0,0,60,30);
+    }
+
+function rectWhite() {
+    ctx.strokeStyle = 'black';
+    ctx.fillStyle = "#FFFFFF";
+     ctx.fillRect(-1,-1,62,32);
+    }
+
+function run() {
+     ctx.translate(20, 570);
+     t.translate(20, 570);  
+     ctx.rotate(Math.PI*(-1)/(4));
+     t.rotate(Math.PI*(-1)/(4));
+     rect();
+    // prin();
+    }
+
+function prin(){
+    var p0 = t.transformPoint(o1,o2);
+    var p1 = t.transformPoint(x1,y1);
+    var p2 = t.transformPoint(x1,y2);
+}
+
+function translt() {
+
+     ctx.translate(i, j);
+     t.translate(i, j);
+    //prin();
+    }
+
+function line(){
+    ctx.fillStyle = "#009900";
+     ctx.beginPath();
+    ctx.moveTo(0,0);
+    ctx.lineTo(300,0);
+    ctx.stroke();
+     ctx.beginPath();
+    ctx.moveTo(0,30);
+    ctx.lineTo(300,30);
+    ctx.stroke();
+}
+
+function direction(){
+var r,l;
+// ctx.strokeStyle = '#ff0000';
+// ctx.beginPath();
+// ctx.moveTo(0,0);
+var cord0 = t.transformPoint(61,0);
+for(q=61;q<1500;q++){
+    var cord = t.transformPoint(q,0);
+    var imgData = ctx.getImageData(cord[0], cord[1], 1, 1);
+    red = imgData.data[0];
+green = imgData.data[1];
+blue = imgData.data[2];
+if(red+green+blue==0){
+    var cord2 = t.transformPoint(q,0);
+    l=Math.sqrt((cord2[0]-cord0[0])*(cord2[0]-cord0[0])+(cord2[1]-cord0[1])*(cord2[1]-cord0[1]));
+    break;
+}
+}
+// ctx.lineTo(q,0);
+//      ctx.stroke();
+//      ctx.strokeStyle = '#ff0000';
+// ctx.beginPath();
+// ctx.moveTo(0,20);
+var cord0 = t.transformPoint(61,30);
+
+for(q=61;q<1500;q++){
+       var cord = t.transformPoint(q,30);
+    var imgData = ctx.getImageData(cord[0], cord[1], 1, 1);
+    red = imgData.data[0];
+green = imgData.data[1];    
+blue = imgData.data[2];
+if(red+green+blue==0){
+    var cord2 = t.transformPoint(q,30);
+    r=Math.sqrt((cord2[0]-cord0[0])*(cord2[0]-cord0[0])+(cord2[1]-cord0[1])*(cord2[1]-cord0[1]));
+    break;
+
+}
+}
+// ctx.lineTo(q,20);
+//      ctx.stroke();
+// α(degrees) × π / 180º
+if (r>l) {
+    if(r>=400)
+        r=390;
+    if(l>=400)
+        l=390;
+    var Q=input_mod_func(l)
+    var rad = Math.PI*Q/180;
+    return rad
+}
+else{
+    if(r>=400)
+        r=390;
+    if(l>=400)
+        l=390;
+    var Q=input_mod_func(r)
+    var rad = (-1)*(Math.PI*Q/180);
+    return rad
+}
+
+}
+
+function fuzzz(p,l){
+    var mid = l/2;
+    var y=0;
+    if(p==mid){
+        y=1;
+    }
+    if(p<mid){
+        y=p/mid
+    }
+    if(p>mid){
+    y=(p-mid)/mid;
+    y=1-y;
+    }
+    return y;
+}
+
+
+function input_mod_func(x){
+    //var x=65;
+    if(x==0){
+    alert("Collision");
+
+    }
+    res = [-1,-1,-1,-1,-1];
+    if(x>=ip[0] && x<=ip[1]){
+    var r = fuzzz(x-ip[0],ip[1]-ip[0]);
+    res[0]=r;
+    }
+if(x>=ip[2] && x<=ip[3]){
+    var r = fuzzz(x-ip[2],ip[3]-ip[2]);
+    res[1]=r;
+}
+if(x>=ip[4] && x<=ip[5]){
+    var r = fuzzz(x-ip[4],ip[5]-ip[4]);
+    res[2]=r;
+
+}
+if(x>=ip[6] && x<=ip[7]){
+    var r = fuzzz(x-ip[6],ip[7]-ip[6]);
+    res[3]=r;
+}
+if(x>=ip[8] && x<=ip[9]){
+    var r = fuzzz(x-ip[8],ip[9]-ip[8]);
+    res[4]=r;
+}
+ return area_under_curve(res);
+}
+
+function area_under_curve(res){ 
+    var x,y;
+    var w_sum=0;
+    var denm=0;
+    if(res[0]!=-1){
+        x=op[8];
+        y=op[9];
+        var w_area = area(x,y,res[0]);
+        w_sum = w_sum+w_area*((y+x)/2);
+        denm= denm + w_area;
+    }
+    
+    if(res[1]!=-1){
+        x=op[6];
+        y=op[7];
+        var w_area = area(x,y,res[1]);
+        w_sum = w_sum+w_area*((y+x)/2);
+        denm= denm + w_area;
+    }
+
+    if(res[2]!=-1){
+        x=op[4];
+        y=op[5];
+        var w_area = area(x,y,res[2]);
+        w_sum = w_sum+w_area*((y+x)/2);
+        denm= denm + w_area;
+    }
+
+    if(res[3]!=-1){
+        x=op[2];
+        y=op[3];
+        var w_area = area(x,y,res[3]);
+        w_sum = w_sum+w_area*((y+x)/2);
+        denm= denm + w_area;
+    }
+    if(res[4]!=-1){
+        x=op[0];
+        y=op[1];
+        var w_area = area(x,y,res[4]);
+        w_sum = w_sum+w_area*((y+x)/2);
+        denm= denm + w_area;
+    }
+        var theta = w_sum/denm;
+        return theta
+
+}
+
+
+function area(x,y,lim){
+    var Q = Math.tan(Math.PI/3);
+    var s = y-x;
+    var a_full = (Q/4)*s*s;
+    var a_top = (Q/4)*((1-lim)*s)*((1-lim)*s);
+    var a_und = a_full - a_top
+    return a_und
+}
+
+function go(){
+    var Q = direction();
+    rectWhite();
+    translt();
+    rot0(Q);
+    rect();
+}
+</script>
+<body onload="init()">
+    <canvas id="can" width="800" height="600" style="border:2px solid;"></canvas>
+    
+
+     <input type="button" value="Initialize"  size="23" onclick="run()">
+     <input type="button" value="Go"  size="23" onclick="go()" >
+</body>
+
+</body>
+</body>
+</html>
